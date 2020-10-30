@@ -1,0 +1,66 @@
+version: "2.4"
+
+
+services: 
+  influxdb:
+    image: "influxdb:1.8-alpine"
+    container_name: mz-influxdb
+    restart: always
+    mem_limit: 3000M
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_REPORTING_DISABLED=true
+      - INFLUXDB_HTTP_LOG_ENABLED=false
+      - INFLUXDB_DATA_QUERY_LOG_ENABLED=false
+      - INFLUXDB_HTTP_ENABLED=true
+      - INFLUXDB_HTTP_FLUX_ENABLED=true
+    volumes:
+      - influx-data:/var/lib/influxdb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+  
+        
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mz-grafana
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - influxdb
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=agenty-flowcharting-panel
+      - GF_INSTALL_PLUGINS=grafana-worldmap-panel
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  telegraf:
+    image: telegraf
+    container_name: mz-telegraf
+    restart: always
+    depends_on:
+      - influxdb
+    volumes:
+     - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
+
+
+volumes:
+  influx-data:
+  grafana-data:
+
+
+    
+    
+
+
+
