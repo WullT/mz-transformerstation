@@ -33,3 +33,11 @@ function Decoder(bytes, port) {
   return decoded;
 }
 ```
+
+## Hardware
+
+>underwater pressure sensor is to do!
+
+### Wiring
+
+![wiringv0](images/wiring_v0.png)
