@@ -12,14 +12,14 @@ Byte 0  node_id
 Byte 1  water_conductivity
 Byte 2  distance_hi
 Byte 3  distance_lo
-Byte 4  pressure_hi
-Byte 5  pressure_lo
+Byte 4  pump_state
+
 
 */
 #include "loramodem.h"
 #include "credentials.h" //appeui and appkey are stored here
 
-
+#define PUMP_PIN 12
 LoRaWANModem modem;
 
 uint8_t node_id = 0x01;
@@ -28,6 +28,11 @@ long nextSend = 0;
 int sendinterval = 60000;
 long nextRead = 0;
 int readInterval = 1000;
+
+int nextlevelread = 0;
+int levelreadinterval = 500;
+
+bool pump_on = false;
 
 
 uint8_t conductivity = 0;
@@ -64,6 +69,7 @@ void getConductivity() {
 void setup() {
     Serial.begin(9600);
     // while (!Serial);
+    pinMode(PUMP_PIN, OUTPUT);
 
     modem.begin();
     modem.info();
@@ -93,9 +99,33 @@ void loop() {
     
     if (millis() > nextSend) {
         Serial.println("sending");
-        uint8_t payload[6] = { node_id,conductivity,disthb,distlb,presshb,presslb };
-        modem.send(payload, 6);
+        uint8_t payload[5] = { node_id,conductivity,disthb,distlb,pump_on };
+        modem.send(payload, 5);
         nextSend = millis() + sendinterval;
+    }
+
+    if (millis() > nextlevelread) {
+        getDistance();
+        if (!pump_on) {
+            if (dist < 100) {
+                pump_on = true;
+            }
+        }
+        else {
+            if (dist > 150) {
+                pump_on = false;
+            }
+        }
+        
+        nextlevelread = millis() + levelreadinterval;
+    }
+    
+    if (pump_on) {
+        digitalWrite(PUMP_PIN, HIGH);
+        
+    }
+    else {
+        digitalWrite(PUMP_PIN, LOW);
     }
     
 }
