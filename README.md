@@ -1,8 +1,14 @@
 # mz-transformerstation
 
-## Payload
 
-### Format
+## Concept
+
+
+
+![overview](images/concept.png)
+## Data
+
+### Payload structure
 
 Byte|description
 -|-
@@ -13,7 +19,7 @@ Byte|description
 4|pump_state
 
 
-### Decoding
+### Payload decoding (TTN Console)
 
 ```js
 function Decoder(bytes, port) {
@@ -35,7 +41,37 @@ function Decoder(bytes, port) {
 
 ## Hardware
 
+- [Arduino Nano BLE Sense](https://store.arduino.cc/arduino-nano-33-ble-sense)
+- [Murata B-L072Z-LRWAN1 board](https://www.st.com/resource/en/data_brief/b-l072z-lrwan1.pdf)
+- [HC-SR04](https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf)
+- [Grove Water Sensor](https://wiki.seeedstudio.com/Grove-Water_Sensor/)
+- Relay Module
 
 ### Wiring
 
 ![wiringv0](images/withoutBLE.png)
+
+
+## Backend
+
+![backend_diag](images/hostsystem.png)
+
+- [docker-compose](https://docs.docker.com/compose/) (see [docker-compose-file](docker/docker-compose.yml))
+  - [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) agent in a container (to subscribe to the TTN MQTT Broker)
+  - [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) container (store data)
+  - [Grafana](https://grafana.com/) container (visualize data)
+
+
+## Concept with two controllers communicating over BLE
+
+![concept_with_ble](images/concept-ble.png)
+
+To avoid having a wire between the floating conductivity sensor and the controller, it can be replaced with ble. To add redundancy to the water level measurement, an additional ToF distance sensor can be used.
+
+### Wiring
+
+![wiring_with_ble](images/wiring_withble.png)
+
+
+
+
