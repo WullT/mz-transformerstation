@@ -62,6 +62,20 @@ function Decoder(bytes, port) {
   - [Grafana](https://grafana.com/) container (visualize data)
 
 
+## Vizualisation
+
+The vizualisation of the data is done with Grafana. The screenshot below shows the dashboard.
+
+![grafana-screenshot](images/grafana-screenshot.png)
+
+Legend
+plugin|description
+-|-
+top-left|time series graph which shows the water level
+top-right|the actual water level
+bottom-left|time series graph which shows the conductivity
+bottom-right|state of the pump
+
 ## Concept with two controllers communicating over BLE
 
 ![concept_with_ble](images/concept-ble.png)
