@@ -2,7 +2,6 @@
 
 ## Payload
 
-
 ### Format
 
 Byte|description
@@ -11,8 +10,8 @@ Byte|description
 1|water conductivity `[0..255]`
 2|distance (high byte)
 3|distance (low byte)
-4|pressure (high byte)
-5|pressure (low byte)
+4|pump_state
+
 
 ### Decoding
 
@@ -27,7 +26,7 @@ function Decoder(bytes, port) {
     decoded.node_id = bytes[0];
     decoded.conductivity = bytes[1];
     decoded.distance = (bytes[2]<<8)+bytes[3];
-    decoded.pressure = (bytes[4]<<8)+bytes[5];
+    decoded.pump_state = bytes[4];
    }
 
   return decoded;
@@ -36,8 +35,7 @@ function Decoder(bytes, port) {
 
 ## Hardware
 
->underwater pressure sensor is to do!
 
 ### Wiring
 
-![wiringv0](images/wiring_v0.png)
+![wiringv0](images/withoutBLE.png)

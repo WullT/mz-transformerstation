@@ -9,30 +9,29 @@
 /*
 Payload Format:
 Byte 0  node_id
-Byte 1  water_conductivity
+Byte 1  conductivity
 Byte 2  distance_hi
 Byte 3  distance_lo
 Byte 4  pump_state
-
-
 */
 #include "loramodem.h"
 #include "credentials.h" //appeui and appkey are stored here
 
+#define CONDUCTIVITY_THRESHOLD 100
 #define PUMP_PIN 12
 LoRaWANModem modem;
 
 uint8_t node_id = 0x01;
 
 long nextSend = 0;
-int sendinterval = 60000;
+int sendinterval = 60000; // each minute, for testing
 long nextRead = 0;
 int readInterval = 1000;
 
 int nextlevelread = 0;
 int levelreadinterval = 500;
 
-bool pump_on = false;
+uint8_t pump_on = 0;
 
 
 uint8_t conductivity = 0;
@@ -106,14 +105,21 @@ void loop() {
 
     if (millis() > nextlevelread) {
         getDistance();
-        if (!pump_on) {
-            if (dist < 100) {
-                pump_on = true;
-            }
+        getConductivity();
+        if (conductivity < CONDUCTIVITY_THRESHOLD) { // there is oil!
+            pump_on = 0;
         }
         else {
-            if (dist > 150) {
-                pump_on = false;
+
+            if (!pump_on) {
+                if (dist < 100) {
+                    pump_on = 1;
+                }
+            }
+            else {
+                if (dist > 150) {
+                    pump_on = 0;
+                }
             }
         }
         
